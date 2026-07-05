@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KTM Motohall - SPA</title>
+    <!-- Fontes e Ícones -->
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,700;1,700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* --- 1. SETUP GLOBAL E FONTES --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f4f4f4;
+            color: #000;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Classes utilitárias para o SPA */
+        .view { display: none; animation: fadeIn 0.4s ease; }
+        .view.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- 2. CABEÇALHO E TOP BAR (PADRÃO PARA TODAS AS TELAS) --- */
+        .top-bar {
+            background-color: #fff;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 13px;
+            font-weight: 500;
+            padding: 8px 0;
+        }
+
+        .top-bar-container {
+            display: flex;
+            justify-content: flex-end;
+            gap: 25px;
+        }
+
+        .top-info {
+            display: flex;
+            gap: 20px;
+            color: #000;
+        }
+
+        .top-info span, .top-info a, .top-lang a {
+            color: #000;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: color 0.2s;
+        }
+
+        .top-info a:hover, .top-lang a:hover { color: #ff6600; }
+
+        .main-header {
+            background-color: #fff;
+            padding: 20px 0;
+            border-bottom: 1px solid #e0e0e0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 38px;
+            font-weight: 700;
+            font-style: italic;
+            text-transform: uppercase;
+            letter-spacing: -1px;
+            text-decoration: none;
+            color: #000;
+            display: flex;
+            flex-direction: column;
+            line-height: 1;
+        }
+
+        .logo-row { display: flex; align-items: baseline; }
+        .logo-ktm { color: #000; margin-right: 5px; }
+        .logo-motohall { color: #ff6600; }
+        .logo-subtext { font-size: 14px; font-family: 'Roboto', sans-serif; font-style: normal; color: #888; font-weight: 500; margin-top: 2px; }
+
+        .main-nav {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .main-nav ul {
+            display: flex;
+            list-style: none;
+            gap: 25px;
+        }
+
+        .main-nav ul li a {
+            text-decoration: none;
+            color: #000;
+            font-weight: 700;
+            font-size: 20px;
+            font-family: 'Barlow Condensed', sans-serif;
+            text-transform: uppercase;
+            transition: color 0.2s;
+            cursor: pointer;
+        }
+
+        .main-nav ul li a:hover { color: #ff6600; }
+
+        .btn-tickets {
+            background-color: #ff5000;
+            color: #fff;
+            text-decoration: none;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 700;
+            font-size: 18px;
+            padding: 10px 24px;
+            transition: background-color 0.2s, transform 0.1s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-tickets:hover { background-color: #d44300; transform: translateY(-2px); }
+
+        /* --- 3. LAYOUT BASE (O FUNDO DE CADERNO TILIBRA GLOBAL) --- */
+        .content-section {
+            padding: 40px 0;
+            background-color: #f7f7f7;
+            min-height: calc(100vh - 200px);
+        }
+
+        .paper-bg {
+            background-color: #fff;
+            padding: 40px;
+            position: relative;
+            border-radius: 4px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            background-image: linear-gradient(#e8e8e8 1px, transparent 1px);
+            background-size: 100% 45px;
+            line-height: 45px;
+            min-height: 600px;
+        }
+
+        .solid-card {
+            background: #fff;
+            padding: 30px;
+            border: 1px solid #ddd;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+            line-height: normal; /* Sobrescreve o caderno */
+            border-radius: 4px;
+        }
+
+        .section-title {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 42px;
+            font-weight: 700;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            color: #000;
+            line-height: 1;
+        }
+
+        .page-header-title {
+            text-align: center;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 46px;
+            font-weight: 700;
+            color: #000;
+            margin-bottom: 40px;
+            text-transform: uppercase;
+            background: #fff;
+            display: inline-block;
+            padding: 0 20px;
+            line-height: 1.2;
+        }
+
+        .text-center { text-align: center; }
+
+        .tilibra-watermark {
+            position: absolute;
+            bottom: 15px;
+            right: 25px;
+            font-size: 14px;
+            color: #b5b5b5;
+            border: 1px solid #b5b5b5;
+            border-radius: 6px;
+            padding: 0px 8px;
+            font-family: sans-serif;
+            line-height: 20px;
+            opacity: 0.7;
+        }
+
+        /* --- BOTOES E LINKS GERAIS --- */
+        .btn-orange {
+            background-color: #ff6600; color: #fff; padding: 12px 25px; border: none; font-family: 'Barlow Condensed', sans-serif; font-size: 20px; font-weight: 700; cursor: pointer; text-transform: uppercase; transition: 0.2s; text-decoration: none; text-align: center; display: inline-block;
+        }
+        .btn-orange:hover { background-color: #d44300; }
+        
+        .btn-gray {
+            background-color: #777; color: #fff; padding: 12px 25px; border: none; font-family: 'Barlow Condensed', sans-serif; font-size: 20px; font-weight: 700; cursor: pointer; text-transform: uppercase; transition: 0.2s; text-decoration: none; text-align: center; display: inline-block;
+        }
+        .btn-gray:hover { background-color: #555; }
+
+        .back-link {
+            display: inline-flex; align-items: center; font-family: 'Roboto', sans-serif; font-weight: 700; color: #ff6600; text-decoration: none; margin-bottom: 30px; font-size: 16px; transition: color 0.2s; cursor: pointer; background: #fff; line-height: normal; padding: 5px 10px; border-radius: 4px;
+        }
+        .back-link:hover { color: #d44300; }
+        .back-link i { margin-right: 8px; }
+
+
+        /* --- 4. TELA: HOME --- */
+        .cards-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; margin-bottom: 40px; margin-top: 20px;
+        }
+        .card {
+            background: #fff; border: 1px solid #d0d0d0; padding: 10px; display: flex; flex-direction: column; line-height: normal; transition: transform 0.2s, box-shadow 0.2s; cursor: pointer;
+        }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); border-color: #ff6600; }
+        .card-image img { width: 100%; height: 220px; display: block; object-fit: cover; }
+        .card-title { font-size: 22px; font-weight: 700; font-family: 'Barlow Condensed', sans-serif; margin-top: 15px; color: #000; text-transform: uppercase; }
+
+        .bottom-grid {
+            display: flex; justify-content: space-between; align-items: flex-start; margin-top: 20px; flex-wrap: wrap; gap: 30px; line-height: normal; background: #fff; padding: 20px; border: 1px solid #eee;
+        }
+        .btn-view-all { background: #fff; border: 2px solid #000; color: #000; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; padding: 10px 35px; font-size: 20px; cursor: pointer; transition: 0.2s; text-transform: uppercase; }
+        .btn-view-all:hover { background: #000; color: #fff; }
+        .events-col { flex: 1.5; min-width: 300px; }
+        .events-title { font-family: 'Barlow Condensed', sans-serif; font-size: 30px; font-weight: 700; text-transform: uppercase; margin-bottom: 15px; color: #ff6600; }
+        .event-item { display: flex; align-items: center; border-bottom: 1px solid #e0e0e0; padding: 12px 0; font-size: 16px; }
+        .event-item:last-child { border-bottom: none; }
+        .event-date { color: #ff6600; font-weight: 700; margin-right: 15px; font-size: 20px; font-family: 'Barlow Condensed', sans-serif; }
+        .event-name { color: #000; flex-grow: 1; font-weight: 500; }
+        .event-link { color: #777; text-decoration: none; font-size: 14px; font-weight: 700; cursor: pointer; }
+        .event-link:hover { color: #ff6600; }
+
+
+        /* --- 5. TELA: AGENDAMENTO (SELEÇÃO) --- */
+        .visit-selection-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 40px; margin-top: 20px; line-height: normal;
+        }
+        .visit-card {
+            background: #fff; border: 1px solid #ddd; padding: 25px; display: flex; flex-direction: column; text-align: center; transition: 0.2s;
+        }
+        .visit-card:hover { border-color: #ff6600; box-shadow: 0 10px 20px rgba(255, 102, 0, 0.1); }
+        .visit-card-title { font-family: 'Barlow Condensed', sans-serif; font-size: 32px; font-weight: 700; color: #000; margin-bottom: 20px; text-transform: uppercase; }
+        .visit-card img { width: 100%; height: 250px; object-fit: cover; margin-bottom: 20px; border: 1px solid #eee; }
+        .visit-card-desc { font-family: 'Roboto', sans-serif; font-size: 16px; color: #444; margin-bottom: 25px; flex-grow: 1; }
+
+
+        /* --- 6. TELA: AGENDAMENTO ESCOLA (FORMULÁRIO) --- */
+        .centered-form-wrapper { display: flex; justify-content: center; margin-bottom: 60px; line-height: normal; }
+        .school-form { width: 100%; max-width: 550px; }
+        .form-title-uppercase { font-family: 'Barlow Condensed', sans-serif; font-size: 28px; font-weight: 700; text-transform: uppercase; margin-bottom: 25px; color: #ff6600; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px; }
+        
+        .form-group { margin-bottom: 20px; text-align: left; }
+        .form-group label { display: block; font-family: 'Roboto', sans-serif; font-weight: 700; font-size: 14px; margin-bottom: 8px; color: #333; }
+        .form-group input[type="text"], .form-group input[type="number"] {
+            width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 4px; font-size: 16px; font-family: 'Roboto', sans-serif; transition: border 0.2s;
+        }
+        .form-group input:focus { border-color: #ff6600; outline: none; }
+        
+        .date-inputs { display: flex; align-items: center; gap: 10px; }
+        .date-inputs input { text-align: center; letter-spacing: 1px; }
+        .date-sm { width: 70px !important; }
+        .date-lg { width: 110px !important; }
+        .date-inputs span { font-size: 20px; color: #888; font-weight: 300; }
+        
+        .form-actions-centered { display: flex; justify-content: space-between; gap: 15px; margin-top: 30px; }
+        .form-actions-centered button, .form-actions-centered a { flex: 1; }
+
+
+        /* --- 7. TELA: COMPRAR INGRESSOS (AGENDA) --- */
+        .events-buy-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; margin-bottom: 60px; line-height: normal; }
+        .event-buy-card {
+            display: flex; flex-direction: column; border: 1px solid #d0d0d0; background: #fff; cursor: pointer; transition: 0.2s;
+        }
+        .event-buy-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); border-color: #ff6600; }
+        .card-black-top {
+            background-color: #000; color: #fff; display: flex; justify-content: space-between; padding: 12px 20px; font-size: 24px; font-weight: 700; font-family: 'Barlow Condensed', sans-serif;
+        }
+        .card-black-top span:last-child { color: #ff6600; }
+        .event-buy-card img { width: 100%; height: 220px; object-fit: cover; display: block; border-bottom: 1px solid #eee;}
+        .card-white-bottom {
+            background-color: #fff; color: #000; text-align: center; padding: 15px 10px; font-size: 22px; font-weight: 700; text-transform: uppercase; font-family: 'Barlow Condensed', sans-serif;
+        }
+
+        .agenda-section { background: #fff; padding: 30px; border: 1px solid #ddd; line-height: normal; margin-bottom: 40px; }
+        .agenda-title { font-family: 'Barlow Condensed', sans-serif; font-size: 32px; font-weight: 700; text-transform: uppercase; margin-bottom: 20px; color: #000; border-bottom: 2px solid #000; padding-bottom: 10px; display: inline-block; }
+        .agenda-list { list-style: none; }
+        .agenda-item { display: flex; padding: 25px 0; border-bottom: 1px solid #eee; gap: 30px; align-items: flex-start; }
+        .agenda-item:last-child { border-bottom: none; }
+        .agenda-date { font-family: 'Barlow Condensed', sans-serif; font-size: 40px; font-weight: 700; color: #ff6600; min-width: 120px; line-height: 1; }
+        .agenda-desc { font-family: 'Roboto', sans-serif; font-size: 16px; color: #444; line-height: 1.6; }
+
+
+        /* --- 8. TELA: DETALHE DO EVENTO --- */
+        .event-detail-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 40px; align-items: start; line-height: normal; }
+        .event-detail-image img { width: 100%; height: auto; display: block; border: 1px solid #d0d0d0; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        .event-detail-info { background: #fff; padding: 30px; border: 1px solid #ddd; height: 100%; display: flex; flex-direction: column; }
+        .event-title { font-family: 'Barlow Condensed', sans-serif; font-size: 42px; font-weight: 700; color: #000; text-transform: uppercase; margin-bottom: 20px; line-height: 1.1; }
+        .event-description { font-family: 'Roboto', sans-serif; font-size: 18px; color: #444; line-height: 1.6; margin-bottom: 40px; }
+        
+        .purchase-action-area { display: flex; flex-direction: column; align-items: flex-end; margin-top: auto; border-top: 1px solid #eee; padding-top: 20px; }
+        .purchase-controls { display: flex; align-items: stretch; border: 2px solid #000; height: 55px; border-radius: 4px; overflow: hidden; margin-bottom: 10px; }
+        
+        .qty-selector { display: flex; align-items: center; background-color: #fff; }
+        .qty-arrows { display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 0 10px; background-color: #f4f4f4; border-right: 1px solid #ccc; height: 100%; cursor: pointer; color: #555; }
+        .qty-arrows i { font-size: 12px; padding: 3px 0; }
+        .qty-arrows i:hover { color: #ff6600; }
+        .qty-display { width: 60px; text-align: center; font-family: 'Barlow Condensed', sans-serif; font-size: 24px; font-weight: 700; border: none; background: transparent; outline: none; }
+        
+        .btn-add-cart { background-color: #000; color: #fff; border: none; width: 70px; cursor: pointer; font-size: 20px; transition: background-color 0.2s; display: flex; justify-content: center; align-items: center; }
+        .btn-add-cart:hover { background-color: #ff6600; }
+        .purchase-total { font-family: 'Barlow Condensed', sans-serif; font-size: 32px; font-weight: 700; color: #ff6600; }
+
+
+        /* --- 9. TELA: CARRINHO --- */
+        .cart-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 40px; line-height: normal; }
+        .cart-table-wrapper { background: #fff; padding: 20px; border: 1px solid #ddd; }
+        .cart-table { width: 100%; border-collapse: collapse; text-align: left; }
+        .cart-table th { font-family: 'Barlow Condensed', sans-serif; font-size: 20px; text-transform: uppercase; padding: 15px 10px; border-bottom: 2px solid #000; color: #000; }
+        .cart-table td { padding: 20px 10px; border-bottom: 1px solid #eee; vertical-align: middle; }
+        .cart-item-desc { font-family: 'Roboto', sans-serif; font-size: 18px; font-weight: 500; }
+        .cart-item-price { font-family: 'Barlow Condensed', sans-serif; font-size: 24px; font-weight: 700; color: #ff6600; }
+        
+        .cart-qty-control { display: flex; align-items: stretch; border: 1px solid #ccc; width: fit-content; border-radius: 4px; overflow: hidden; height: 40px; }
+        .cart-qty-arrows { display: flex; flex-direction: column; justify-content: center; background: #f4f4f4; padding: 0 8px; border-right: 1px solid #ccc; cursor: pointer; }
+        .cart-qty-arrows i { font-size: 10px; }
+        .cart-qty-control input { width: 40px; text-align: center; border: none; font-weight: 700; font-size: 16px; outline: none; }
+        
+        .cart-summary-column { background: #000; color: #fff; padding: 30px; display: flex; flex-direction: column; justify-content: space-between; min-height: 250px; }
+        .cart-total-line { display: flex; justify-content: space-between; align-items: center; font-family: 'Barlow Condensed', sans-serif; font-size: 32px; font-weight: 700; border-bottom: 1px solid #444; padding-bottom: 15px; margin-bottom: 20px; }
+        .cart-total-line span:last-child { color: #ff6600; }
+        .btn-checkout { background-color: #ff6600; color: #fff; border: none; padding: 15px; font-family: 'Barlow Condensed', sans-serif; font-size: 24px; font-weight: 700; width: 100%; cursor: pointer; text-transform: uppercase; transition: 0.2s; }
+        .btn-checkout:hover { background-color: #d44300; }
+
+
+        /* --- 10. RODAPÉ GLOBAL --- */
+        .main-footer { background-color: #222; padding: 30px 0; font-size: 14px; color: #aaa; }
+        .footer-flex { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+        .footer-links { display: flex; gap: 20px; }
+        .footer-links a { color: #ccc; text-decoration: none; font-weight: 500; transition: 0.2s;}
+        .footer-links a:hover { color: #ff6600; }
+
+
+        /* RESPONSIVO BÁSICO */
+        @media (max-width: 900px) {
+            .visit-selection-grid, .cart-grid, .event-detail-grid { grid-template-columns: 1fr; }
+            .header-container { flex-direction: column; gap: 15px; }
+            .main-nav ul { flex-wrap: wrap; justify-content: center; }
+            .agenda-item { flex-direction: column; gap: 10px; }
+        }
+        @media (max-width: 768px) {
+            .top-bar-container { justify-content: center; }
+            .page-header-title { font-size: 32px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- TOP BAR GLOBAL -->
+    <div class="top-bar">
+        <div class="container top-bar-container">
+            <div class="top-info">
+                <span><i class="fa-regular fa-clock"></i> ABERTO ATÉ 18h</span>
+                <a href="#"><i class="fa-solid fa-map-location-dot"></i> HORÁRIO E COMO CHEGAR</a>
+                <a href="#"><i class="fa-solid fa-phone"></i> CONTATO</a>
+            </div>
+            <div class="top-lang">
+                <a href="#"><i class="fa-solid fa-globe"></i> PT</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- HEADER GLOBAL -->
+    <header class="main-header">
+        <div class="container header-container">
+            <a onclick="navigateTo('view-home')" class="logo" style="cursor: pointer;">
+                <div class="logo-row">
+                    <span class="logo-ktm">KTM</span><span class="logo-motohall">Motohall</span>
+                </div>
+                <span class="logo-subtext">EXPERIENCE CENTER</span>
+            </a>
+            <nav class="main-nav">
+                <ul>
+                    <li><a onclick="navigateTo('view-home')">Facilidades</a></li>
+                    <li><a onclick="navigateTo('view-home')">Experiências</a></li>
+                    <li><a onclick="navigateTo('view-ingressos')">Ingressos</a></li>
+                    <li><a onclick="navigateTo('view-agendamento')">Visitas</a></li>
+                </ul>
+                <button onclick="navigateTo('view-ingressos')" class="btn-tickets">COMPRAR INGRESSOS ONLINE</button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- ÁREA DE CONTEÚDO DINÂMICA (SPA) -->
+    <main class="content-section">
+        <div class="container paper-bg">
+            
+            <!-- ---------------------------------------------------------------- -->
+            <!-- TELA 1: HOME (INDEX) -->
+            <!-- ---------------------------------------------------------------- -->
+            <section id="view-home" class="view active">
+                <h1 class="section-title">Museu KTM</h1>
+                <h2 style="font-family: 'Roboto'; font-weight: 400; color: #555; margin-bottom: 30px;">Bem-vindo ao coração da performance.</h2>
+
+                <div class="cards-grid">
+                    <div class="card" onclick="navigateTo('view-ingressos')">
+                        <div class="card-image"><img src="https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Exposições Interativas"></div>
+                        <div class="card-title">Exposições Interativas</div>
+                    </div>
+                    <div class="card" onclick="navigateTo('view-ingressos')">
+                        <div class="card-image"><img src="https://images.unsplash.com/photo-1615172282427-9a57ef2d142e?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Motos de Corrida"></div>
+                        <div class="card-title">Motos de Herança</div>
+                    </div>
+                    <div class="card" onclick="navigateTo('view-ingressos')">
+                        <div class="card-image"><img src="https://images.unsplash.com/photo-1558981403-c5f9899a28bc?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Inovação de Rua"></div>
+                        <div class="card-title">Inovação de Rua</div>
+                    </div>
+                </div>
+
+                <div class="bottom-grid">
+                    <div class="action-col">
+                        <button class="btn-view-all" onclick="navigateTo('view-ingressos')">Ver todos</button>
+                    </div>
+                    <div class="events-col">
+                        <h2 class="events-title">Próximos Eventos</h2>
+                        <div class="event-item">
+                            <div class="event-date">23 JUN</div>
+                            <div class="event-name">Apresentação Red Bull</div>
+                            <a onclick="navigateTo('view-detalhe')" class="event-link">Ver Detalhes ></a>
+                        </div>
+                        <div class="event-item">
+                            <div class="event-date">27 JUN</div>
+                            <div class="event-name">Aniversário Motohall</div>
+                            <a onclick="navigateTo('view-detalhe')" class="event-link">Ver Detalhes ></a>
+                        </div>
+                        <div class="event-item">
+                            <div class="event-date">05 JUL</div>
+                            <div class="event-name">Motos e Mecânicos</div>
+                            <a onclick="navigateTo('view-detalhe')" class="event-link">Ver Detalhes ></a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ---------------------------------------------------------------- -->
+            <!-- TELA 2: AGENDAMENTO (SELEÇÃO) -->
+            <!-- ---------------------------------------------------------------- -->
+            <section id="view-agendamento" class="view">
+                <div class="text-center">
+                    <h1 class="page-header-title">Agendar Visita</h1>
+                </div>
+                
+                <div class="visit-selection-grid">
+                    <div class="visit-card">
+                        <h3 class="visit-card-title">Escola / Instituição</h3>
+                        <img src="https://images.unsplash.com/photo-1577896851231-70ef18881754?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Turma de alunos no museu">
+                        <p class="visit-card-desc">Agende uma visita guiada para a sua turma de alunos com experiências interativas.</p>
+                        <button class="btn-orange" onclick="navigateTo('view-agendamento-escola')" style="width: 100%;">Continuar</button>
+                    </div>
+
+                    <div class="visit-card">
+                        <h3 class="visit-card-title">Empresa / Corporativo</h3>
+                        <img src="https://images.unsplash.com/photo-1556761175-5973dc0f32d7?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Empresa no museu">
+                        <p class="visit-card-desc">Agende uma visita corporativa, eventos de team building ou reuniões especiais.</p>
+                        <button class="btn-orange" onclick="alert('Fluxo de empresa não desenhado. Redirecionando para escola para demonstração.'); navigateTo('view-agendamento-escola')" style="width: 100%;">Continuar</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ---------------------------------------------------------------- -->
+            <!-- TELA 3: AGENDAMENTO ESCOLA (FORMULÁRIO) -->
+            <!-- ---------------------------------------------------------------- -->
+            <section id="view-agendamento-escola" class="view">
+                <a onclick="navigateTo('view-agendamento')" class="back-link"><i class="fas fa-arrow-left"></i> Voltar para opções</a>
+                
+                <div class="text-center">
+                    <h1 class="page-header-title">Agendamento Escolar</h1>
+                </div>
+
+                <div class="centered-form-wrapper">
+                    <form class="solid-card school-form" onsubmit="event.preventDefault(); alert('Solicitação enviada com sucesso!'); navigateTo('view-home');">
+                        <h2 class="form-title-uppercase">Dados da Instituição</h2>
+
+                        <div class="form-group">
+                            <label for="school_name">Nome da Escola / Instituição</label>
+                            <input type="text" id="school_name" name="school_name" required placeholder="Ex: Colégio Estadual KTM">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="student_count">Número de Alunos Estimado</label>
+                            <input type="number" id="student_count" name="student_count" required placeholder="Ex: 35" min="1">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Data Desejada (DD / MM / AAAA)</label>
+                            <div class="date-inputs">
+                                <input type="text" maxlength="2" placeholder="DD" class="date-sm" required>
+                                <span>/</span>
+                                <input type="text" maxlength="2" placeholder="MM" class="date-sm" required>
+                                <span>/</span>
+                                <input type="text" maxlength="4" placeholder="AAAA" class="date-lg" required>
+                            </div>
+                        </div>
+
+                        <div class="form-actions-centered">
+                            <a onclick="navigateTo('view-agendamento')" class="btn-gray">Cancelar</a>
+                            <button type="submit" class="btn-orange">Enviar Solicitação</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- ---------------------------------------------------------------- -->
+            <!-- TELA 4: COMPRAR INGRESSOS (EVENTOS) -->
+            <!-- ---------------------------------------------------------------- -->
+            <section id="view-ingressos" class="view">
+                <div class="text-center">
+                    <h1 class="page-header-title">Próximos Eventos e Experiências</h1>
+                </div>
+
+                <div class="events-buy-grid">
+                    <div class="event-buy-card" onclick="navigateTo('view-detalhe')">
+                        <div class="card-black-top">
+                            <span>23/06</span>
+                            <span>&euro; 35,00</span>
+                        </div>
+                        <img src="https://images.unsplash.com/photo-1599818828062-11116cb793e7?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Apresentação Redbull">
+                        <div class="card-white-bottom">APRESENTAÇÃO REDBULL</div>
+                    </div>
+
+                    <div class="event-buy-card" onclick="navigateTo('view-detalhe')">
+                        <div class="card-black-top">
+                            <span>27/06</span>
+                            <span>&euro; 20,00</span>
+                        </div>
+                        <img src="https://images.unsplash.com/photo-1558981001-1995369a39cd?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Aniversário Motohall">
+                        <div class="card-white-bottom">ANIVERSÁRIO MOTOHALL</div>
+                    </div>
+
+                    <div class="event-buy-card" onclick="navigateTo('view-detalhe')">
+                        <div class="card-black-top">
+                            <span>05/07</span>
+                            <span>&euro; 10,00</span>
+                        </div>
+                        <img src="https://images.unsplash.com/photo-1590212879038-f9333cb92b67?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Motos e Mecanicos">
+                        <div class="card-white-bottom">MOTOS E MECÂNICOS</div>
+                    </div>
+                </div>
+
+                <div class="agenda-section">
+                    <h2 class="agenda-title">AGENDA DETALHADA</h2>
+                    <ul class="agenda-list">
+                        <li class="agenda-item">
+                            <div class="agenda-date">23/06</div>
+                            <div class="agenda-desc">
+                                Uma apresentação exclusiva realizada pela equipe da Redbull com atrações internacionais. Venha vivenciar a adrenalina e conhecer os pilotos de perto na estrutura oficial da KTM Motohall. O evento conta com sessão de autógrafos.
+                            </div>
+                        </li>
+                        <li class="agenda-item">
+                            <div class="agenda-date">27/06</div>
+                            <div class="agenda-desc">
+                                Comemoração especial do aniversário do museu. Inclui tour guiado gratuito pelo acervo histórico, palestras com engenheiros responsáveis pelo design das motos campeãs do Dakar e um coquetel no final do dia.
+                            </div>
+                        </li>
+                        <li class="agenda-item">
+                            <div class="agenda-date">05/07</div>
+                            <div class="agenda-desc">
+                                Workshop técnico focado nos bastidores das corridas. Aprenda com os mecânicos oficiais da KTM como é feita a preparação e o setup das motos antes de entrarem na pista de MotoGP. Vagas limitadas.
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- ---------------------------------------------------------------- -->
+            <!-- TELA 5: DETALHE DO EVENTO -->
+            <!-- ---------------------------------------------------------------- -->
+            <section id="view-detalhe" class="view">
+                <a onclick="navigateTo('view-ingressos')" class="back-link"><i class="fas fa-arrow-left"></i> Voltar para Ingressos</a>
+
+                <div class="event-detail-grid">
+                    <div class="event-detail-image">
+                        <img src="https://images.unsplash.com/photo-1599818828062-11116cb793e7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Apresentação Redbull">
+                    </div>
+
+                    <div class="event-detail-info">
+                        <h1 class="event-title">APRESENTAÇÃO REDBULL - 23/06</h1>
+                        <p class="event-description">
+                            Uma apresentação imperdível realizada pela equipe da Redbull com atrações exclusivas. Venha vivenciar a adrenalina e conhecer os pilotos de perto na estrutura oficial da KTM Motohall. <br><br>
+                            <strong>Incluso:</strong> Acesso à arquibancada VIP, sessão de autógrafos, e 1 bebida energética cortesia.
+                        </p>
+
+                        <div class="purchase-action-area">
+                            <div class="purchase-controls">
+                                <div class="qty-selector">
+                                    <div class="qty-arrows">
+                                        <i class="fas fa-chevron-up" onclick="changeQty('detail-qty', 1)"></i>
+                                        <i class="fas fa-chevron-down" onclick="changeQty('detail-qty', -1)"></i>
+                                    </div>
+                                    <input type="text" id="detail-qty" value="1" class="qty-display" readonly>
+                                </div>
+                                <button class="btn-add-cart" onclick="navigateTo('view-carrinho')" title="Adicionar ao Carrinho">
+                                    <i class="fas fa-shopping-cart"></i>
+                                </button>
+                            </div>
+                            <div class="purchase-total">Valor Unit: &euro; 35,00</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ---------------------------------------------------------------- -->
+            <!-- TELA 6: CARRINHO -->
+            <!-- ---------------------------------------------------------------- -->
+            <section id="view-carrinho" class="view">
+                <a onclick="navigateTo('view-detalhe')" class="back-link"><i class="fas fa-arrow-left"></i> Continuar Comprando</a>
+                
+                <div class="text-center">
+                    <h1 class="page-header-title">CARRINHO DE COMPRAS</h1>
+                </div>
+
+                <div class="cart-grid">
+                    <div class="cart-items-column">
+                        <div class="cart-table-wrapper">
+                            <table class="cart-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 20%;">Qtd</th>
+                                        <th style="width: 55%;">Descrição</th>
+                                        <th style="width: 25%; text-align: right;">Valor</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <div class="cart-qty-control">
+                                                <div class="cart-qty-arrows">
+                                                    <i class="fas fa-chevron-up" onclick="changeQty('cart-qty-1', 1)"></i>
+                                                    <i class="fas fa-chevron-down" onclick="changeQty('cart-qty-1', -1)"></i>
+                                                </div>
+                                                <input type="text" id="cart-qty-1" value="1" readonly>
+                                            </div>
+                                        </td>
+                                        <td class="cart-item-desc">
+                                            Ticket Evento - Apresentação Redbull
+                                        </td>
+                                        <td class="cart-item-price" style="text-align: right;">
+                                            &euro; 35,00
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="cart-summary-column">
+                        <div class="cart-summary-top">
+                            <h3 style="font-family: 'Barlow Condensed'; font-size: 28px; margin-bottom: 20px; text-transform: uppercase;">Resumo do Pedido</h3>
+                            <p style="color: #ccc; font-size: 14px; margin-bottom: 10px;">Taxas e impostos inclusos.</p>
+                        </div>
+
+                        <div class="cart-summary-bottom">
+                            <div class="cart-total-line">
+                                <span>Total</span>
+                                <span>&euro; 35,00</span>
+                            </div>
+                            <button class="btn-checkout" onclick="finalizarCompra()">
+                                FINALIZAR COMPRA
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- A marca d'água permanece global dentro do paper-bg -->
+            <div class="tilibra-watermark">tilibra</div>
+        </div>
+    </main>
+
+    <!-- FOOTER GLOBAL -->
+    <footer class="main-footer">
+        <div class="container footer-flex">
+            <p>&copy; Copyright 2026 - KTM Motohall. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="#">Site Map</a>
+                <a href="#">Termos e Condições</a>
+                <a href="#">Política de Privacidade</a>
+                <a href="#">Contato</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- SCRIPT DE NAVEGAÇÃO E INTERATIVIDADE BÁSICA -->
+    <script>
+        // Função para alternar entre as telas (SPA)
+        function navigateTo(viewId) {
+            // Esconde todas as sections
+            const views = document.querySelectorAll('.view');
+            views.forEach(view => {
+                view.classList.remove('active');
+            });
+            
+            // Mostra a selecionada
+            document.getElementById(viewId).classList.add('active');
+            
+            // Rola para o topo suavemente
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Função simples para interagir visualmente com as quantidades
+        function changeQty(inputId, amount) {
+            const input = document.getElementById(inputId);
+            let currentValue = parseInt(input.value);
+            let newValue = currentValue + amount;
+            
+            if(newValue >= 1 && newValue <= 10) { // limite min 1, max 10 para demo
+                input.value = newValue;
+            }
+        }
+
+        // Função mockada para finalizar compra
+        function finalizarCompra() {
+            alert('Parabéns! Sua compra foi processada com sucesso no ambiente de demonstração.');
+            navigateTo('view-home');
+        }
+    </script>
+</body>
+</html>
